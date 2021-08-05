@@ -33,13 +33,6 @@ def call(Map pipelineParams) {
             }
           }
         }
-        stage('Update Helm') {
-          steps{
-              sh '''
-              helm upgrade --install $serviceName $helmRepo/$helmPackage --set image.repository=$registry --set image.tag=$BUILD_TAG --set fullnameOverride=$serviceName-$helmPackage
-              '''
-          }
-        }
         stage('Check Release Notes condition') {
           steps{
             script {
@@ -52,6 +45,7 @@ def call(Map pipelineParams) {
                     }
 
                     sh '''
+                    echo $releaseNotes
                     helm upgrade --install ${serviceName}-$helmServicePackage-release-notes $helmRepo/$helmReleaseNote --set image.repository=${registry}-release-notes --set image.tag=$BUILD_TAG --set fullnameOverride=${serviceName}-release-notes
                     '''
 
@@ -59,6 +53,13 @@ def call(Map pipelineParams) {
 
                 }
             }
+          }
+        }
+        stage('Update Helm') {
+          steps{
+              sh '''
+              helm upgrade --install $serviceName $helmRepo/$helmPackage --set image.repository=$registry --set image.tag=$BUILD_TAG --set fullnameOverride=$serviceName-$helmPackage
+              '''
           }
         }
         stage('Remove Unused docker image') {
