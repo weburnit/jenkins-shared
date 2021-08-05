@@ -45,7 +45,7 @@ def call(Map pipelineParams) {
                         docsImage.push()
                     }
 
-                    echo "$releaseNotes with length ${lengthNotes}"
+                    echo "$releaseNotes"
                     sh '''
                     helm upgrade --install ${serviceName}-release-notes ${helmRepo}/${helmReleaseNote} --set image.repository=${registry}-release-notes --set image.tag=$BUILD_TAG --set fullnameOverride=${serviceName}-release-notes
                     '''
