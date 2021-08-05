@@ -36,7 +36,7 @@ def call(Map pipelineParams) {
         stage('Check Release Notes condition') {
           steps{
             script {
-                if (releaseNotes.length() > 0) {
+                if (releaseNotes.length() > 100) {
                     def dockerfile = 'Docs.Dockerfile'
                     def docsImage = docker.build("${registry}-release-notes:${env.BUILD_TAG}", "-f ${dockerfile} .")
 
@@ -50,7 +50,8 @@ def call(Map pipelineParams) {
                     '''
 
                     sh "docker rmi ${registry}-release-notes:${env.BUILD_TAG}"
-
+                } else {
+                    sh "echo 'Release notes is not enough to release'"
                 }
             }
           }
