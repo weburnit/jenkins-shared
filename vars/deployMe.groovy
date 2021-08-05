@@ -45,7 +45,7 @@ def call(Map pipelineParams) {
 
                     echo "$releaseNotes with length $lengthNotes"
                     sh '''
-                    helm upgrade --install ${serviceName}-$helmServicePackage-release-notes $helmRepo/$helmReleaseNote --set image.repository=${registry}-release-notes --set image.tag=$BUILD_TAG --set fullnameOverride=${serviceName}-release-notes
+                    helm upgrade --install ${serviceName}-release-notes ${helmRepo}/${helmReleaseNote} --set image.repository=${registry}-release-notes --set image.tag=$BUILD_TAG --set fullnameOverride=${serviceName}-release-notes
                     '''
 
                     sh "docker rmi ${registry}-release-notes:${env.BUILD_TAG}"
@@ -58,13 +58,13 @@ def call(Map pipelineParams) {
         stage('Update Helm') {
           steps{
               sh '''
-              helm upgrade --install $serviceName $helmRepo/$helmPackage --set image.repository=$registry --set image.tag=$BUILD_TAG --set fullnameOverride=$serviceName-$helmPackage
+              helm upgrade --install ${serviceName} ${helmRepo}/${helmPackage} --set image.repository=${registry} --set image.tag=$BUILD_TAG --set fullnameOverride=${serviceName}-${helmPackage}
               '''
           }
         }
         stage('Remove Unused docker image') {
           steps{
-            sh "docker rmi $registry:$BUILD_TAG"
+            sh "docker rmi ${registry}:$BUILD_TAG"
           }
         }
       }
