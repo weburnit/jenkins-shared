@@ -1,15 +1,13 @@
 def call(Map pipelineParams) {
     pipeline {
-      environment {
-        registry = pipelineParams.registry
-        registryCredential = pipelineParams.registryCredential
-        dockerImage = ''
-        helmRepo = pipelineParams.helmRepo
-        helmPackage = pipelineParams.basePackage
-        serviceName = pipelineParams.serviceName
-        helmReleaseNote = 'release-notes'
-        releaseNotes = pipelineParams.withReleaseNotes
-      }
+      def registry = pipelineParams.registry
+      def registryCredential = pipelineParams.registryCredential
+      def dockerImage = ''
+      def helmRepo = pipelineParams.helmRepo
+      def helmPackage = pipelineParams.basePackage
+      def serviceName = pipelineParams.serviceName
+      def helmReleaseNote = 'release-notes'
+      def releaseNotes = pipelineParams.withReleaseNotes
       agent any
       stages {
         stage('Cloning Git') {
