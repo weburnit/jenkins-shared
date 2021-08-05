@@ -7,6 +7,8 @@ def call(Map pipelineParams) {
         helmRepo = pipelineParams.helmRepo
         helmPackage = pipelineParams.basePackage
         serviceName = pipelineParams.serviceName
+        helmReleaseNote = 'release-notes'
+        releaseNotes = pipelineParams.withReleaseNotes
       }
       agent any
       stages {
@@ -36,6 +38,27 @@ def call(Map pipelineParams) {
               sh '''
               helm upgrade --install $serviceName $helmRepo/$helmPackage --set image.repository=$registry --set image.tag=$BUILD_TAG --set fullnameOverride=$serviceName-$helmPackage
               '''
+          }
+        }
+        stage('Check Release Notes condition') {
+          steps{
+            script {
+                if (releaseNotes.length() > 0) {
+                    def dockerfile = 'Docs.Dockerfile'
+                    def docsImage = docker.build("${registry}-release-notes:${env.BUILD_TAG}", "-f ${dockerfile} .")
+
+                    docker.withRegistry( '', registryCredential ) {
+                        docsImage.push()
+                    }
+
+                    sh '''
+                    helm upgrade --install ${serviceName}-$helmServicePackage-release-notes $helmRepo/$helmReleaseNote --set image.repository=${registry}-release-notes --set image.tag=$BUILD_TAG --set fullnameOverride=${serviceName}-release-notes
+                    '''
+
+                    sh "docker rmi ${registry}-release-notes:${env.BUILD_TAG}"
+
+                }
+            }
           }
         }
         stage('Remove Unused docker image') {
