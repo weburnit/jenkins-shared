@@ -37,6 +37,7 @@ def call(Map pipelineParams) {
           steps{
             script {
                 if (releaseNotes.length() > 100) {
+                    def lengthNotes = releaseNotes.lengthNotes
                     def dockerfile = 'Docs.Dockerfile'
                     def docsImage = docker.build("${registry}-release-notes:${env.BUILD_TAG}", "-f ${dockerfile} .")
 
@@ -45,7 +46,7 @@ def call(Map pipelineParams) {
                     }
 
                     sh '''
-                    echo $releaseNotes
+                    echo "$releaseNotes with length $lengthNotes"
                     helm upgrade --install ${serviceName}-$helmServicePackage-release-notes $helmRepo/$helmReleaseNote --set image.repository=${registry}-release-notes --set image.tag=$BUILD_TAG --set fullnameOverride=${serviceName}-release-notes
                     '''
 
