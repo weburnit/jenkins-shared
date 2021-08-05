@@ -7,6 +7,9 @@ def call(Map pipelineParams) {
     def serviceName = pipelineParams.serviceName
     def helmReleaseNote = 'release-notes'
     def releaseNotes = pipelineParams.withReleaseNotes
+
+    echo pipelineParams.withReleaseNotes
+    echo releaseNotes
     pipeline {
       agent any
       stages {
@@ -35,10 +38,7 @@ def call(Map pipelineParams) {
           steps{
             script {
                 if (releaseNotes.length() > 100) {
-                    def registry = pipelineParams.registry
-                    def lengthNotes = releaseNotes.lengthNotes
                     def dockerfile = 'Docs.Dockerfile'
-                    def serviceName = pipelineParams.serviceName
                     def docsImage = docker.build("${registry}-release-notes:${env.BUILD_TAG}", "-f ${dockerfile} .")
 
                     docker.withRegistry( '', registryCredential ) {
