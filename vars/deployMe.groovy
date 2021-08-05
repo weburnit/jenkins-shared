@@ -1,12 +1,12 @@
 def call(Map pipelineParams) {
-  def registry = pipelineParams.registry
-  def registryCredential = pipelineParams.registryCredential
-  def dockerImage = ''
-  def helmRepo = pipelineParams.helmRepo
-  def helmPackage = pipelineParams.basePackage
-  def serviceName = pipelineParams.serviceName
-  def helmReleaseNote = 'release-notes'
-  def releaseNotes = pipelineParams.withReleaseNotes
+    def registry = pipelineParams.registry
+    def registryCredential = pipelineParams.registryCredential
+    def dockerImage = ''
+    def helmRepo = pipelineParams.helmRepo
+    def helmPackage = pipelineParams.basePackage
+    def serviceName = pipelineParams.serviceName
+    def helmReleaseNote = 'release-notes'
+    def releaseNotes = pipelineParams.withReleaseNotes
     pipeline {
       agent any
       stages {
