@@ -8,8 +8,10 @@ def call(Map pipelineParams) {
     def helmReleaseNote = 'release-notes'
     def releaseNotes = pipelineParams.withReleaseNotes
 
-    echo pipelineParams.withReleaseNotes
-    echo releaseNotes
+    echo pipelineParams.helmRepo
+    echo helmRepo
+    echo pipelineParams.serviceName
+    echo serviceName
     pipeline {
       agent any
       stages {
@@ -45,7 +47,6 @@ def call(Map pipelineParams) {
                         docsImage.push()
                     }
 
-                    echo "$releaseNotes"
                     sh '''
                     helm upgrade --install ${serviceName}-release-notes ${helmRepo}/${helmReleaseNote} --set image.repository=${registry}-release-notes --set image.tag=$BUILD_TAG --set fullnameOverride=${serviceName}-release-notes
                     '''
