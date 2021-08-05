@@ -7,6 +7,7 @@ def call(Map pipelineParams) {
         serviceName = pipelineParams.serviceName
         helmServicePackage = pipelineParams.basePackage
         helmReleaseNote = 'release-notes'
+        releaseNotes = pipelineParams.releaseNotes
       }
       agent any
       stages {
@@ -36,7 +37,7 @@ def call(Map pipelineParams) {
         }
         stage('Remove Unused docker image') {
           steps{
-            sh "docker rmi ${registry}-release-notes:${env.BUILD_TAG}
+            sh "cat $releaseNotes; docker rmi ${registry}-release-notes:${env.BUILD_TAG}"
           }
         }
       }
