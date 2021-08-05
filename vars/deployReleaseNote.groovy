@@ -5,6 +5,7 @@ def call(Map pipelineParams) {
         registryCredential = pipelineParams.registryCredential
         helmRepo = pipelineParams.helmRepo
         serviceName = pipelineParams.serviceName
+        helmServicePackage = pipelineParams.basePackage
         helmReleaseNote = 'release-notes'
       }
       agent any
@@ -29,7 +30,7 @@ def call(Map pipelineParams) {
         stage('Update Helm Release Note service') {
           steps{
               sh '''
-              helm upgrade --install ${SERVICE_NAME}-release-notes $helmRepo/$helmReleaseNote --set image.repository=${registry}-release-notes --set image.tag=$BUILD_TAG --set fullnameOverride=${serviceName}-release-notes
+              helm upgrade --install ${serviceName}-$helmServicePackage-release-notes $helmRepo/$helmReleaseNote --set image.repository=${registry}-release-notes --set image.tag=$BUILD_TAG --set fullnameOverride=${serviceName}-release-notes
               '''
           }
         }
