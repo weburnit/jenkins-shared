@@ -59,10 +59,6 @@ def call(Map pipelineParams) {
         }
         stage('Update Helm') {
           steps{
-            def registry = pipelineParams.registry
-            def helmRepo = pipelineParams.helmRepo
-            def helmPackage = pipelineParams.basePackage
-            def serviceName = pipelineParams.serviceName
               sh '''
               helm upgrade --install ${serviceName} ${helmRepo}/${helmPackage} --set image.repository=${registry} --set image.tag=$BUILD_TAG --set fullnameOverride=${serviceName}-${helmPackage}
               '''
