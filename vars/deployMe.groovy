@@ -57,7 +57,7 @@ def call(Map pipelineParams) {
         }
         stage('Update Helm') {
           steps{
-              sh "helm upgrade --install ${serviceName} ${helmRepo}/${helmPackage} --set image.repository=${registry}:${BUILD_TAG} --set image.tag=$BUILD_TAG --set fullnameOverride=${serviceName}-${helmPackage}"
+              sh "helm upgrade --install ${serviceName} ${helmRepo}/${helmPackage} --set image.repository=${registry} --set image.tag=$BUILD_TAG --set fullnameOverride=${serviceName}-${helmPackage}"
           }
         }
         stage('Remove Unused docker image') {
