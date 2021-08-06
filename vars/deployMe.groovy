@@ -23,7 +23,7 @@ def call(Map pipelineParams) {
         stage('Building image') {
           steps{
             script {
-              dockerImage = docker.build registry + ":$BUILD_TAG"
+              dockerImage = docker.build registry + ":${BUILD_TAG}"
             }
           }
         }
@@ -41,14 +41,14 @@ def call(Map pipelineParams) {
             script {
                 if (releaseNotes.length() > 100) {
                     def dockerfile = 'Docs.Dockerfile'
-                    def docsImage = docker.build("${registry}-release-notes:${env.BUILD_TAG}", "-f ${dockerfile} .")
+                    def docsImage = docker.build("${registry}-release-notes:${BUILD_TAG}", "-f ${dockerfile} .")
 
                     docker.withRegistry( '', registryCredential ) {
                         docsImage.push()
                     }
                     sh "helm upgrade --install ${serviceName}-release-notes ${helmRepo}/${helmReleaseNote} --set image.repository=${registry}-release-notes --set image.tag=$BUILD_TAG --set fullnameOverride=${serviceName}-release-notes"
 
-                    sh "docker rmi ${registry}-release-notes:${env.BUILD_TAG}"
+                    sh "docker rmi ${registry}-release-notes:${BUILD_TAG}"
                 } else {
                     sh "echo 'Release notes is not enough to release'"
                 }
@@ -57,12 +57,12 @@ def call(Map pipelineParams) {
         }
         stage('Update Helm') {
           steps{
-              sh "helm upgrade --install ${serviceName} ${helmRepo}/${helmPackage} --set image.repository=${registry} --set image.tag=$BUILD_TAG --set fullnameOverride=${serviceName}-${helmPackage}"
+              sh "helm upgrade --install ${serviceName} ${helmRepo}/${helmPackage} --set image.repository=${registry}:${BUILD_TAG}--set image.tag=$BUILD_TAG --set fullnameOverride=${serviceName}-${helmPackage}"
           }
         }
         stage('Remove Unused docker image') {
           steps{
-            sh "docker rmi ${registry}:$BUILD_TAG"
+            sh "docker rmi ${registry}:${BUILD_TAG}"
           }
         }
       }
