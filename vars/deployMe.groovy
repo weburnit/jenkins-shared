@@ -7,6 +7,12 @@ def call(Map pipelineParams) {
     def serviceName = pipelineParams.serviceName
     def helmReleaseNote = 'release-notes'
     def releaseNotes = pipelineParams.withReleaseNotes
+    def replica = 1
+    def cfgReplica = pipelineParams.withReplicas as int
+    if (cfgReplica > 1) {
+        replica = cfgReplica
+    }
+
 
     echo pipelineParams.helmRepo
     echo helmRepo
@@ -57,7 +63,7 @@ def call(Map pipelineParams) {
         }
         stage('Update Helm') {
           steps{
-              sh "helm upgrade --install ${serviceName} ${helmRepo}/${helmPackage} --set image.repository=${registry} --set image.tag=$BUILD_TAG --set fullnameOverride=${serviceName}-${helmPackage}"
+              sh "helm upgrade --install ${serviceName} ${helmRepo}/${helmPackage} --set image.repository=${registry} --set image.tag=$BUILD_TAG --set fullnameOverride=${serviceName}-${helmPackage}" --set replicaCount=${replica}
           }
         }
         stage('Remove Unused docker image') {
